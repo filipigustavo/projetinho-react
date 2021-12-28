@@ -1,50 +1,16 @@
-import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
+import useSWR from "swr";
 
 import ProductsList from './components/ProductsList'
-import Axios from "./helpers/axios";
 import { FormCategoryWithModal } from "./components/FormCategory";
 import { FormProductWithModal } from "./components/FormProduct";
+import { fetcher } from './helpers/axios'
+import useTreatedProducts from "./hooks/useTreatedProducts";
 
 function App() {
-  const [categories, setCategories] = useState([])
-  const [products, setProducts] = useState([])
-  const [productsTreated, setProductsTreated] = useState([])
-  
-  const loadCategories = () => {
-    Axios
-      .get("/categories")
-      .then(({data}) => setCategories(data))
-  }
-
-  const loadProducts = () => {
-    Axios
-      .get("/products")
-      .then(({data}) => setProducts(data))
-  }
-
-  useEffect(() => {
-    loadCategories()
-    loadProducts()
-  }, [])
-
-  useEffect(() => {
-    if (!!products.length && !!categories.length) {
-      const getCategoryName = (id) => {
-        if (!categories.length) return { name: '' }
-        return categories.find((item) => item.id === id)
-      }
-
-      let newProducts = JSON.parse(JSON.stringify(products))
-
-      newProducts = newProducts.map((item) => {
-        item.category = getCategoryName(item.category).name
-        return item
-      })
-
-      setProductsTreated(newProducts)
-    }
-  }, [products, categories])
+  const { data: categories, mutate: loadCategories } = useSWR("/categories", fetcher, { fallbackData: [] })
+  const { data: products, mutate: loadProducts } = useSWR("/products", fetcher, { fallbackData: [] })
+  const productsTreated = useTreatedProducts(products, categories)
 
   return (
     <div className="App">
