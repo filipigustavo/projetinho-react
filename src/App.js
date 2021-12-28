@@ -84,6 +84,11 @@ function App() {
     saveProduct()
   }
 
+  const getCategoryName = (id) => {
+    if (!categories.length) return { name: '' }
+    return categories.find((item) => item.id === id)
+  }
+
   useEffect(() => {
     loadCategories()
     loadProducts()
@@ -120,7 +125,7 @@ function App() {
                 {products.map((item) => <tr key={item.id}>
                   <td>{item.id}</td>
                   <td>{item.name}</td>
-                  <td>{item.category}</td>
+                  <td>{getCategoryName(item.category).name}</td>
                   <td>{item.description}</td>
                 </tr>)}
               </tbody>
