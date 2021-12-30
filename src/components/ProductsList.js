@@ -1,7 +1,7 @@
 import { Button, Table } from "react-bootstrap"
 
 import { FormProductWithModal } from "./ProductFields"
-import rawProduct from "../helpers/findRawProduct"
+import rawProduct from "../helpers/rawProduct"
 
 const ProductsList = ({ products, categories, onEdit, onDelete }) => {
   return <Table>
