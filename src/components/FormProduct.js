@@ -1,42 +1,14 @@
-import { useState } from "react"
-import { faSpinner } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { Button, Form } from "react-bootstrap"
+import { Form } from "react-bootstrap"
 
-import Axios from "../helpers/axios"
 import withModal from '../hocs/withModal'
+import withForm from "../hocs/withForm"
+import compose from "../helpers/compose"
 
-const FormProduct = ({ categories, loadProducts }) => {
-  const [showLoaderProduct, setShowLoaderProduct] = useState(false)
-  const [formProduct, setFormProduct] = useState({ name: "", category: "", description: "" })
-
-  const handleChangeFormProduct = (event) => {
-    const newForm = Object.assign({}, formProduct)
-    newForm[event.target.name] = event.target.value
-    setFormProduct(newForm)
-  }
-
-  const saveProduct = () => {
-    setShowLoaderProduct(true)
-    Axios
-      .post("/products", formProduct)
-      .then(() => {
-        loadProducts()
-        setFormProduct({ name: "", category: "", description: "" })
-      })
-      .catch(err => console.error(err))
-      .finally(() => setShowLoaderProduct(false))
-  }
-
-  const handleSubmitFormProduct = (event) => {
-    event.preventDefault()
-    saveProduct()
-  }
-
-  return <Form onSubmit={handleSubmitFormProduct}>
+const ProductFields = ({ categories, form, onChangeForm }) => {
+  return <>
     <Form.Group>
       <Form.Label>Categoria</Form.Label>
-      <Form.Select name="category" value={formProduct.category} onChange={handleChangeFormProduct}>
+      <Form.Select name="category" value={form.category} onChange={onChangeForm}>
         <option>Selectione uma categoria</option>
         {categories.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
       </Form.Select>
@@ -44,22 +16,18 @@ const FormProduct = ({ categories, loadProducts }) => {
 
     <Form.Group>
       <Form.Label>Nome</Form.Label>
-      <Form.Control name="name" value={formProduct.name} onChange={handleChangeFormProduct} />
+      <Form.Control name="name" value={form.name} onChange={onChangeForm} />
     </Form.Group>
 
     <Form.Group>
       <Form.Label>Descrição</Form.Label>
-      <Form.Control as="textarea" name="description" value={formProduct.description} onChange={handleChangeFormProduct}></Form.Control>
+      <Form.Control as="textarea" name="description" value={form.description} onChange={onChangeForm}></Form.Control>
     </Form.Group>
-
-    <Button variant="primary" type="submit" className="mt-2">
-      Salvar {showLoaderProduct && <FontAwesomeIcon icon={faSpinner} spin />}
-    </Button>
-  </Form>
+  </>
 }
 
-export default FormProduct
+export default ProductFields
 
-const FormProductWithModal = withModal(FormProduct)
+const FormProductWithModal = compose(withModal, withForm)(ProductFields)
 
 export { FormProductWithModal }
