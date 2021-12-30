@@ -13,7 +13,7 @@ const useTreatedProducts = (products, categories) => {
       let newProducts = JSON.parse(JSON.stringify(products))
 
       newProducts = newProducts.map((item) => {
-        item.category = getCategoryName(item.category).name
+        item.category = getCategoryName(item.category)
         return item
       })
 
